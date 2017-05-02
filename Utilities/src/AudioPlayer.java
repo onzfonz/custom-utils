@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -20,7 +21,11 @@ public class AudioPlayer {
 	private static AudioPlayer somePlayer;
 	
 	private AudioPlayer() {
-		JFXPanel fxPanel = new JFXPanel();
+		Platform.runLater(new Runnable() {
+			public void run() {
+				JFXPanel fxPanel = new JFXPanel();
+			}
+		});
 		players = new HashMap<String, MediaPlayer>();
 	}
 	
@@ -61,13 +66,18 @@ public class AudioPlayer {
 	 */
 	public void playSound(String folder, String filename, boolean shouldLoop) {
 		MediaPlayer mPlayer = findSound(folder, filename);
-		if(mPlayer == null || mPlayer.getCycleDuration().lessThanOrEqualTo(mPlayer.getCurrentTime())) {
-			mPlayer = createMediaPlayer(folder, filename);
-		}
-		mPlayer.play();
-		if(shouldLoop) {
-			mPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-		}
+		Platform.runLater(new Runnable() {
+			public void run() {
+				if(mPlayer == null || mPlayer.getCycleDuration().lessThanOrEqualTo(mPlayer.getCurrentTime())) {
+//					mPlayer = createMediaPlayer(folder, filename);
+					mPlayer.seek(mPlayer.getStartTime());
+				}
+				mPlayer.play();
+				if(shouldLoop) {
+					mPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+				}
+			}
+		});
 	}
 	
 	private MediaPlayer createMediaPlayer(String folder, String filename) {
@@ -120,7 +130,11 @@ public class AudioPlayer {
 	public void stopSound(String folder, String filename) {
 		MediaPlayer mp = findSound(folder, filename);
 		if(mp != null) {
-			mp.stop();
+			Platform.runLater(new Runnable() {
+				public void run() {
+					mp.stop();
+				}
+			});
 		}
 	}
 	
@@ -134,7 +148,11 @@ public class AudioPlayer {
 	public void pauseSound(String folder, String filename) {
 		MediaPlayer mp = findSound(folder, filename);
 		if(mp != null) {
-			mp.pause();
+			Platform.runLater(new Runnable() {
+				public void run() {
+					mp.pause();
+				}
+			});
 		}
 	}
 }
