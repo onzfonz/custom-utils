@@ -68,7 +68,7 @@ public class AudioPlayer {
 		MediaPlayer mPlayer = findSound(folder, filename);
 		Platform.runLater(new Runnable() {
 			public void run() {
-				if(mPlayer == null || mPlayer.getCycleDuration().lessThanOrEqualTo(mPlayer.getCurrentTime())) {
+				if(mPlayer.getCycleDuration().lessThanOrEqualTo(mPlayer.getCurrentTime())) {
 //					mPlayer = createMediaPlayer(folder, filename);
 					mPlayer.seek(mPlayer.getStartTime());
 				}
@@ -117,7 +117,11 @@ public class AudioPlayer {
 	}
 	
 	private MediaPlayer findSound(String folder, String filename) {
-		return players.get(folder+filename);
+		MediaPlayer mp = players.get(folder+filename);
+		if(mp == null) {
+			mp = createMediaPlayer(folder, filename);
+		}
+		return mp;
 	}
 	
 	/**
