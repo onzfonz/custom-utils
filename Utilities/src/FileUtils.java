@@ -10,19 +10,37 @@ import javax.swing.JFileChooser;
 
 public class FileUtils {
 	public static void writeLinesToFile(ArrayList<String> lines) {
-		JFileChooser jf = new JFileChooser();
-		jf.setCurrentDirectory(new File(".."));
-		int returnVal = jf.showSaveDialog(null);
-		if(returnVal == JFileChooser.APPROVE_OPTION) {
-			BufferedWriter wr = openFileWriter(jf.getSelectedFile().getAbsolutePath());
-			writeOutLines(wr, lines);
+		String filename = getFilenamePathFromDialog();
+		BufferedWriter wr = openFileWriter(filename);
+		writeOutLines(wr, lines);
+		try {
+			wr.close();
+		}catch(IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
-	public static void convertLinesToCSVFormat(ArrayList<String> lines) {
-		
+	public static void writeStringOutToFile(String s) {
+		String filename = getFilenamePathFromDialog();
+		BufferedWriter wr = openFileWriter(filename);
+		writeOutLine(wr, s);
+		try {
+			wr.close();
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
+	private static String getFilenamePathFromDialog() {
+		JFileChooser jf = new JFileChooser();
+		jf.setCurrentDirectory(new File(".."));
+		int returnVal = jf.showSaveDialog(null);
+		while(returnVal != JFileChooser.APPROVE_OPTION) {
+			jf.showSaveDialog(null);
+		}
+		return jf.getSelectedFile().getAbsolutePath();
+	}
+
 	public static ArrayList<String> getFileLines() {
 		JFileChooser jf = new JFileChooser();
 		jf.setCurrentDirectory(new File(".."));
@@ -32,12 +50,12 @@ public class FileUtils {
 		}
 		return null;
 	}
-	
+
 	public static ArrayList<String> getFileLines(String filename) {
 		BufferedReader bf = openFileReader(filename);
 		return readAllLines(bf);
 	}
-	
+
 	/*
 	 * Requests the name of an input file from the user and opens
 	 * that file to obtain a BufferedReader.  If the file doesnt
@@ -54,7 +72,7 @@ public class FileUtils {
 		}
 		return rd;
 	}
-	
+
 	private static BufferedWriter openFileWriter (String filename) {
 		BufferedWriter wr = null;
 		while (wr == null) {
@@ -66,7 +84,7 @@ public class FileUtils {
 		}
 		return wr;
 	}
-	
+
 	/*
 	 * Reads all available lines from the specified reader and returns
 	 * an ArrayList containing those lines.  This method closes the
@@ -86,14 +104,14 @@ public class FileUtils {
 		}
 		return lineList;
 	}
-	
-	
+
+
 	private static void writeOutLines(BufferedWriter bf, ArrayList<String> lines) {
 		for(String line:lines) {
 			writeOutLine(bf, line+"\n");
 		}
 	}
-	
+
 	private static void writeOutLine(BufferedWriter bf, String text) {
 		try {
 			bf.write(text);
@@ -101,5 +119,11 @@ public class FileUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void main(String[] args) {
+		ArrayList<String> lines = getFileLines();
+		ParsingUtils.convertLinesToCSVFormat(lines);
+		writeLinesToFile(lines);
 	}
 }
