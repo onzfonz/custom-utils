@@ -21,11 +21,7 @@ public class AudioPlayer {
 	private static AudioPlayer somePlayer;
 	
 	private AudioPlayer() {
-		Platform.runLater(new Runnable() {
-			public void run() {
-				JFXPanel fxPanel = new JFXPanel();
-			}
-		});
+		JFXPanel fxPanel = new JFXPanel();
 		players = new HashMap<String, MediaPlayer>();
 	}
 	
@@ -37,12 +33,14 @@ public class AudioPlayer {
 	 * @return instance of the AudioPlayer
 	 */
 	public static AudioPlayer getInstance() {
-		synchronized(AudioPlayer.class) {
-			if(somePlayer == null) {
-				somePlayer = new AudioPlayer();
-			}
-		}
-		return somePlayer;
+		return AudioPlayerHolder.INSTANCE;
+	}
+	
+	/*
+	 * Uses initialization-on-demand holder idiom
+	 */
+	private static class AudioPlayerHolder {
+		private static final AudioPlayer INSTANCE = new AudioPlayer();
 	}
 	
 	/**
