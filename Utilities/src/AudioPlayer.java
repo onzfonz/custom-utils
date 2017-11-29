@@ -7,21 +7,23 @@
  * AudioPlayer supports mp3 files and is based on the javafx MediaPlayer class
  * Questions can be sent to ojimenez@pacific.edu
  */
+import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class AudioPlayer {
-	private Map<String, MediaPlayer> players;
+	private HashMap<String, MediaPlayer> players;
 	private static AudioPlayer somePlayer;
 	
 	private AudioPlayer() {
-		JFXPanel fxPanel = new JFXPanel();
+		final JFXPanel fxPanel = new JFXPanel();
 		players = new HashMap<String, MediaPlayer>();
 	}
 	
@@ -33,14 +35,10 @@ public class AudioPlayer {
 	 * @return instance of the AudioPlayer
 	 */
 	public static AudioPlayer getInstance() {
-		return AudioPlayerHolder.INSTANCE;
-	}
-	
-	/*
-	 * Uses initialization-on-demand holder idiom
-	 */
-	private static class AudioPlayerHolder {
-		private static final AudioPlayer INSTANCE = new AudioPlayer();
+		if(somePlayer == null) {
+			somePlayer = new AudioPlayer();
+		}
+		return somePlayer;
 	}
 	
 	/**
@@ -63,19 +61,23 @@ public class AudioPlayer {
 	 * @param shouldLoop true will loop the sound.  
 	 */
 	public void playSound(String folder, String filename, boolean shouldLoop) {
-		MediaPlayer mPlayer = findSound(folder, filename);
 		Platform.runLater(new Runnable() {
+			@Override
 			public void run() {
-				if(mPlayer.getCycleDuration().lessThanOrEqualTo(mPlayer.getCurrentTime())) {
-//					mPlayer = createMediaPlayer(folder, filename);
-					mPlayer.seek(mPlayer.getStartTime());
-				}
-				mPlayer.play();
-				if(shouldLoop) {
-					mPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-				}
+				playSoundWithOptions(folder, filename, shouldLoop);
 			}
 		});
+	}
+
+	private void playSoundWithOptions(String folder, String filename, boolean shouldLoop) {
+		MediaPlayer mPlayer = findSound(folder, filename);
+		if(mPlayer == null || mPlayer.getCycleDuration().lessThanOrEqualTo(mPlayer.getCurrentTime())) {
+			mPlayer = createMediaPlayer(folder, filename);
+		}
+		mPlayer.play();
+		if(shouldLoop) {
+			mPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+		}
 	}
 	
 	private MediaPlayer createMediaPlayer(String folder, String filename) {
@@ -115,11 +117,7 @@ public class AudioPlayer {
 	}
 	
 	private MediaPlayer findSound(String folder, String filename) {
-		MediaPlayer mp = players.get(folder+filename);
-		if(mp == null) {
-			mp = createMediaPlayer(folder, filename);
-		}
-		return mp;
+		return players.get(folder+filename);
 	}
 	
 	/**
@@ -130,14 +128,14 @@ public class AudioPlayer {
 	 * @param filename filename for the sound, make sure to include the extension
 	 */
 	public void stopSound(String folder, String filename) {
-		MediaPlayer mp = findSound(folder, filename);
-		if(mp != null) {
-			Platform.runLater(new Runnable() {
-				public void run() {
+		Platform.runLater(new Runnable() {
+			public void run() {
+				MediaPlayer mp = findSound(folder, filename);
+				if(mp != null) {
 					mp.stop();
 				}
-			});
-		}
+			}
+		});
 	}
 	
 	/**
@@ -148,13 +146,13 @@ public class AudioPlayer {
 	 * @param filename filename for the sound, make sure to include the extension
 	 */
 	public void pauseSound(String folder, String filename) {
-		MediaPlayer mp = findSound(folder, filename);
-		if(mp != null) {
-			Platform.runLater(new Runnable() {
-				public void run() {
+		Platform.runLater(new Runnable() {
+			public void run() {
+				MediaPlayer mp = findSound(folder, filename);
+				if(mp != null) {
 					mp.pause();
 				}
-			});
-		}
+			}
+		});
 	}
 }
