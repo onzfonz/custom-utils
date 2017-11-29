@@ -7,19 +7,17 @@
  * AudioPlayer supports mp3 files and is based on the javafx MediaPlayer class
  * Questions can be sent to ojimenez@pacific.edu
  */
-import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
 
-public class AudioPlayer {
-	private HashMap<String, MediaPlayer> players;
+public final class AudioPlayer {
+	private final Map<String, MediaPlayer> players;
 	private static AudioPlayer somePlayer;
 	
 	private AudioPlayer() {
@@ -130,9 +128,9 @@ public class AudioPlayer {
 	public void stopSound(String folder, String filename) {
 		Platform.runLater(new Runnable() {
 			public void run() {
-				MediaPlayer mp = findSound(folder, filename);
-				if(mp != null) {
-					mp.stop();
+				MediaPlayer sound = findSound(folder, filename);
+				if(sound != null) {
+					sound.stop();
 				}
 			}
 		});
@@ -148,9 +146,9 @@ public class AudioPlayer {
 	public void pauseSound(String folder, String filename) {
 		Platform.runLater(new Runnable() {
 			public void run() {
-				MediaPlayer mp = findSound(folder, filename);
-				if(mp != null) {
-					mp.pause();
+				MediaPlayer sound = findSound(folder, filename);
+				if(sound != null) {
+					sound.pause();
 				}
 			}
 		});
