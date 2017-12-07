@@ -1,3 +1,4 @@
+package utilities;
 /*
  * Typical usage of the AudioPlayer.java
  * ----------------------------------
@@ -32,7 +33,7 @@ public final class AudioPlayer {
 	 * 
 	 * @return instance of the AudioPlayer
 	 */
-	public static AudioPlayer getInstance() {
+	public static synchronized AudioPlayer getInstance() {
 		if(somePlayer == null) {
 			somePlayer = new AudioPlayer();
 		}
@@ -96,13 +97,11 @@ public final class AudioPlayer {
 		}
 		final URL resource = getClass().getClassLoader().getResource(folder+filename);
 		try {
-			String result = resource.toString();
-			return result;
+			return resource.toString();
 		}catch(NullPointerException ex) {
 			try {
 				final URL newResource = getClass().getClassLoader().getResource("../"+folder+filename);
-				String result = newResource.toString();
-				return result;
+				return newResource.toString();
 			}catch(NullPointerException ex1) {
 				ex.printStackTrace();
 				System.out.println("MEDIA FILE NOT FOUND: " + folder+filename);
