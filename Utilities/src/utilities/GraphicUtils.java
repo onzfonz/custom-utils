@@ -10,9 +10,9 @@ public class GraphicUtils {
 
 	/*
 	 * Method: projectPolarPoint(point, r, thetaDegrees)
-	 * ------------------------------------------ Taken a theta in degrees,
-	 * provide the point of where something would end up given an distance and
-	 * that theta and return it as a point.
+	 * 
+	 * Taken a theta in degrees, provide the point of where something would end
+	 * up given an distance and that theta and return it as a point.
 	 */
 	public static Point projectPolarPoint(Point orig, double r, double theta) {
 		double x = r * Math.sin(Math.toRadians(theta));
